@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play on Same Device</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: url('background.jpg') center/cover no-repeat;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #game-container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #333;
+      font-size: 2em;
+      cursor: pointer;
+    }
+
+    .result {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Tic-Tac-Toe - Play on Same Device</h1>
+    <div class="board" id="board">
+      <!-- Game board will be generated here -->
+    </div>
+    <div id="result" class="result"></div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const board = document.getElementById('board');
+      const result = document.getElementById('result');
+
+      let currentPlayer = 'X';
+      let gameBoard = ['', '', '', '', '', '', '', '', ''];
+      let gameActive = true;
+
+      const handleCellClick = (index) => {
+        if (!gameBoard[index] && gameActive) {
+          gameBoard[index] = currentPlayer;
+          renderBoard();
+          const winner = checkWinner();
+          if (winner) {
+            endGame(winner);
+          } else {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          }
+        }
+      };
+
+      const checkWinner = () => {
+        const winPatterns = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Rows
+          [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Columns
+          [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        for (const pattern of winPatterns) {
+          const [a, b, c] = pattern;
+          if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+            return gameBoard[a];
+          }
+        }
+
+        if (!gameBoard.includes('')) {
+          return 'T'; // Tie
+        }
+
+        return null;
+      };
+
+      const renderBoard = () => {
+        board.innerHTML = '';
+        gameBoard.forEach((value, index) => {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          cell.textContent = value;
+          cell.addEventListener('click', () => handleCellClick(index));
+          board.appendChild(cell);
+        });
+      };
+
+      const endGame = (winner) => {
+        gameActive = false;
+        if (winner === 'T') {
+          result.textContent = 'It\'s a tie!';
+        } else {
+          result.textContent = `Player ${winner} wins!`;
+        }
+      };
+
+      renderBoard();
+    });
+  </script>
+</body>
+</html>
